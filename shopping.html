@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Document</title>
+    <script type='text/javascript' src='js/vue.js'></script>
+    <style>
+        th,
+        td {
+            text-align: center;
+            height: 50px;
+        }
+        
+        span {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            margin: 10px;
+            line-height: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='app'>
+        <table width="600" align="center" border="3px solid #cccc" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>全选<input type="checkbox" @change="Allchange(checkAll)" v-model="checkAll"></th>
+                    <th>商品</th>
+                    <th>单价{{''|joint}}</th>
+                    <th>数量</th>
+                    <th>金额{{''|joint}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item,index) in goods" :key="item.id">
+                    <td><input type="checkbox" @change="check(item.ischecked)" v-model="item.ischecked"></td>
+                    <td>{{item.productName}}</td>
+                    <td>{{item.price}}</td>
+                    <td><span @click="reduce(index)">-</span>
+                        <input type="text" v-model="item.num" style="width:50px;height: 30px;text-align: center">
+                        <span @click="add(index)">+</span></td>
+                    <td>{{item.price*item.num}}</td>
+                </tr>
+            </tbody>
+            <tbody>
+            </tbody>
+        </table>
+        <p style=" margin-left: 1140px;">总金额为:{{totals | joint}}</p>
+    </div>
+    <script type='text/javascript'>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                goods: [{
+                    id: 1,
+                    ischecked: false,
+                    productName: '苹果7',
+                    price: 4500,
+                    num: 1,
+                    total: ''
+                }, {
+                    id: 2,
+                    ischecked: false,
+                    productName: '苹果8',
+                    price: 4600,
+                    num: 1,
+                    total: ''
+                }, {
+                    id: 3,
+                    ischecked: false,
+                    productName: '苹果9',
+                    price: 4700,
+                    num: 1,
+                    total: ''
+                }, {
+                    id: 4,
+                    ischecked: false,
+                    productName: '苹果10',
+                    price: 4800,
+                    num: 1,
+                    total: ''
+                }],
+                count: 0,
+                checkAll: false
+            },
+            methods: {
+                Allchange(checkAll) {
+                    this.goods.map(item => item.ischecked = checkAll)
+                    this.count = checkAll ? this.goods.length : 0;
+                },
+                check(param) {
+                    this.count += param ? 1 : -1
+                },
+                reduce(index) {
+                    if (this.goods[index].num && this.goods[index].num > 1) this.goods[index].num -= 1;
+                },
+                add(index) {
+                    this.goods[index].num += 1
+                }
+            },
+            filters: {
+                joint(val) {
+                    return val + "￥"
+                }
+            },
+            computed: {
+                totals() {
+                    let totals = 0;
+                    this.goods.map(item => {
+                        if (item.ischecked) {
+                            totals += item.price * item.num
+                        }
+                    });
+                    return totals;
+                }
+
+            },
+            watch: {
+                count(val) {
+                    this.checkAll = val === this.goods.length ? true : false
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
